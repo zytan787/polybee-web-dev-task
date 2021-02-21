@@ -22,7 +22,12 @@ export class WeatherDisplayComponent implements OnInit, OnDestroy {
     }
   }
 
-  async getCityWeather(index: number): Promise<any> {
+  getCityWeather(index: number): void {
+    this.updateCityWeather(index);
+    this.modalRef.hide();
+  }
+
+  async updateCityWeather(index: number): Promise<any> {
     const inputField = document.getElementById(`cityname-${index}`) as HTMLInputElement;
     if (inputField !== null) {
       const city = inputField.value;
@@ -61,7 +66,6 @@ export class WeatherDisplayComponent implements OnInit, OnDestroy {
       } catch (e) {
         this.cities[index] = {city, weather: '', error: e.message};
       }
-      this.modalRef.hide();
     }
   }
 
@@ -70,7 +74,7 @@ export class WeatherDisplayComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.weatherDataService.MaxCities; i++) {
       const city = this.cities[i];
       if (city.city && !city.error) {
-        this.getCityWeather(i);
+        this.updateCityWeather(i);
         console.log('Updated!');
       }
     }
