@@ -26,7 +26,8 @@ import {WeatherDataService} from './weather-data.service';
     TooltipModule.forRoot(),
     ModalModule.forRoot(),
   ],
-  providers: [WeatherDataService],
+  providers: [
+    WeatherDataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

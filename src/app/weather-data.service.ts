@@ -1,8 +1,9 @@
-import { Inject, Injectable } from '@angular/core';
+import {Inject, Injectable, OnDestroy} from '@angular/core';
 import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from './../environments/environment';
 import {CityWeather} from './cityWeather';
+import {removeSummaryDuplicates} from '@angular/compiler';
 
 const STORAGE_KEY = 'cities';
 
@@ -10,19 +11,15 @@ const STORAGE_KEY = 'cities';
   providedIn: 'root'
 })
 
-export class WeatherDataService {
+export class WeatherDataService{
   public MaxCities = 9;
 
   getCities(): CityWeather[] {
-    console.log('getting cities...');
-    console.log(this.storage.get(STORAGE_KEY));
     return this.storage.get(STORAGE_KEY);
   }
 
   storeCities(cities: CityWeather[]): void {
     this.storage.set(STORAGE_KEY, cities);
-    console.log('storing cities...');
-    console.log(this.storage.get(STORAGE_KEY));
   }
 
   getCityWeather(index: number, city: string): any {
@@ -34,11 +31,13 @@ export class WeatherDataService {
     private http: HttpClient,
     @Inject(LOCAL_STORAGE) private storage: StorageService
   ) {
-    const cities = this.storage.get(STORAGE_KEY);
-    // const cities = new Array(this.MaxCities);
-    // for (let i = 0; i < this.MaxCities; i++) {
-    //   cities[i] = {id: i, city: '', error: ''};
-    // }
+    let cities = this.storage.get(STORAGE_KEY);
+    if (typeof(cities) === 'undefined') {
+      cities = new Array(this.MaxCities);
+      for (let i = 0; i < this.MaxCities; i++) {
+        cities[i] = {id: i, city: '', error: ''};
+      }
+    }
     this.storeCities(cities);
   }
 }
