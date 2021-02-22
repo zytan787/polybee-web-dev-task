@@ -1,6 +1,7 @@
 import {Component, OnDestroy, OnInit, TemplateRef} from '@angular/core';
 import {WeatherDataService} from '../weather-data.service';
 import {interval, Subscription} from 'rxjs';
+import {CityWeather} from '../cityWeather';
 
 @Component({
   selector: 'app-weather-display',
@@ -9,7 +10,7 @@ import {interval, Subscription} from 'rxjs';
 })
 export class WeatherDisplayComponent implements OnInit, OnDestroy {
   subscription: Subscription = new Subscription();
-  cities = this.weatherDataService.getCities();
+  cities: CityWeather[];
   editCity = Array(this.weatherDataService.MaxCities).fill(false);
 
   showForm(index: number): void {
@@ -38,18 +39,23 @@ export class WeatherDisplayComponent implements OnInit, OnDestroy {
               try {
                 const weatherData = resp.weather[0];
                 this.cities[index] = {id: index, city: resp.name, weather: weatherData, error: ''};
+                this.weatherDataService.storeCities(this.cities);
               } catch (e) {
                 this.cities[index] = {id: index, city, error: 'Error extracting weather from the response'};
+                this.weatherDataService.storeCities(this.cities);
               }
             } else {
               this.cities[index] = {id: index, city, error: resp.message};
+              this.weatherDataService.storeCities(this.cities);
             }
           })
           .catch((err: any) => {
             this.cities[index] = {id: index, city, error: err.error.message};
+            this.weatherDataService.storeCities(this.cities);
           });
       } catch (e) {
         this.cities[index] = {id: index, city, error: e.message};
+        this.weatherDataService.storeCities(this.cities);
       }
     }
     this.editCity[index] = false;
@@ -68,7 +74,9 @@ export class WeatherDisplayComponent implements OnInit, OnDestroy {
 
   constructor(
     private weatherDataService: WeatherDataService,
-  ) {}
+  ) {
+    this.cities = this.weatherDataService.getCities();
+  }
 
   ngOnInit(): void {
     const source = interval(30000);

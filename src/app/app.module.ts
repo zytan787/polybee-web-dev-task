@@ -9,6 +9,7 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { TopBarComponent } from './top-bar/top-bar.component';
 import {FormsModule} from '@angular/forms';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import {WeatherDataService} from './weather-data.service';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     TooltipModule.forRoot(),
     ModalModule.forRoot(),
   ],
-  providers: [],
+  providers: [WeatherDataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
