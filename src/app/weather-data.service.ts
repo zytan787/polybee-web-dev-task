@@ -9,7 +9,7 @@ import {CityWeather} from './cityWeather';
 
 export class WeatherDataService {
   public MaxCities = 9;
-  cities: CityWeather[] = Array(this.MaxCities).fill({city: '', weather: '', error: ''});
+  cities;
 
   getCities(): CityWeather[] {
     return this.cities;
@@ -22,5 +22,11 @@ export class WeatherDataService {
 
   constructor(
     private http: HttpClient
-  ) { }
+  ) {
+    const cities = new Array(this.MaxCities);
+    for (let i = 0; i < this.MaxCities; i++) {
+      cities[i] = {id: i, city: '', error: ''};
+    }
+    this.cities = cities;
+  }
 }

@@ -8,23 +8,25 @@
   margin: auto;
 }
 
-.card .card-img-overlay .edit-btn {
+.card .card-img-overlay .btn {
   visibility: hidden;
   opacity: 0;
   transition: visibility 0s, opacity 0.5s linear;
   position: absolute;
-  bottom: 0.5rem;
-  right: 0.5rem;
+  top: 0.5rem;
+  right: 1.2rem;
+  background: white;
 }
-.card:hover .card-img-overlay .edit-btn {
+.card:hover .card-img-overlay .btn {
   visibility:visible;
-  opacity: 1;
+  opacity: 0.8;
 }
 
 .card .card-img-overlay .city-name {
   display: block;
   width: fit-content;
   margin: auto;
+  margin-bottom: 0.5rem;
 }
 
 .hidden {
@@ -35,4 +37,9 @@
   width: fit-content;
   margin: auto;
   vertical-align: center;
+}
+
+.card .card-img-overlay .weather-data {
+  background: white;
+  opacity: 80%;
 }

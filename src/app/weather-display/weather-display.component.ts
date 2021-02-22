@@ -1,6 +1,5 @@
 import {Component, OnDestroy, OnInit, TemplateRef} from '@angular/core';
 import {WeatherDataService} from '../weather-data.service';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import {interval, Subscription} from 'rxjs';
 
 @Component({
@@ -10,21 +9,22 @@ import {interval, Subscription} from 'rxjs';
 })
 export class WeatherDisplayComponent implements OnInit, OnDestroy {
   subscription: Subscription = new Subscription();
-  modalRef: BsModalRef = new BsModalRef<any>();
   cities = this.weatherDataService.getCities();
-  dismissible = true;
+  editCity = Array(this.weatherDataService.MaxCities).fill(false);
 
-  openModal(template: TemplateRef<any>, index: number): void {
-    this.modalRef = this.modalService.show(template);
-    const inputField = document.getElementById(`cityname-${index}`);
-    if (inputField !== null) {
-      inputField.focus();
+  showForm(index: number): void {
+    if (this.cities[index].weather) {
+      return;
+    }
+    const form = document.getElementById(`form-${index}`);
+    if (form != null) {
+      form.classList.remove('hidden');
     }
   }
 
-  getCityWeather(index: number): void {
-    this.updateCityWeather(index);
-    this.modalRef.hide();
+  changeCity(index: number): void {
+    this.cities[index] = {id: index, city: this.cities[index].city, error: ''};
+    this.editCity[index] = true;
   }
 
   async updateCityWeather(index: number): Promise<any> {
@@ -36,37 +36,23 @@ export class WeatherDisplayComponent implements OnInit, OnDestroy {
           .then((resp: any) => {
             if (resp.hasOwnProperty('weather')) {
               try {
-                const weatherDesc = resp['weather'][0]['main'];
-                switch (weatherDesc) {
-                  case 'Thunderstorm':
-                  case 'Drizzle':
-                  case 'Rain':
-                    this.cities[index] = {city: resp['name'], weather: 'rainy', error: ''};
-                    break;
-                  case 'Clear':
-                    this.cities[index] = {city: resp['name'], weather: 'sunny', error: ''};
-                    break;
-                  case 'Clouds':
-                    this.cities[index] = {city: resp['name'], weather: 'cloudy', error: ''};
-                    break;
-                  default:
-                    this.cities[index] = {city, weather: '', error: 'Weather is not rainy/sunny/cloudy'};
-                    break;
-                }
+                const weatherData = resp.weather[0];
+                this.cities[index] = {id: index, city: resp.name, weather: weatherData, error: ''};
               } catch (e) {
-                this.cities[index] = {city, weather: '', error: 'Error extracting weather from the response'};
+                this.cities[index] = {id: index, city, error: 'Error extracting weather from the response'};
               }
             } else {
-              this.cities[index] = {city, weather: '', error: resp['message']};
+              this.cities[index] = {id: index, city, error: resp.message};
             }
           })
           .catch((err: any) => {
-            this.cities[index] = {city, weather: '', error: err['error']['message']};
+            this.cities[index] = {id: index, city, error: err.error.message};
           });
       } catch (e) {
-        this.cities[index] = {city, weather: '', error: e.message};
+        this.cities[index] = {id: index, city, error: e.message};
       }
     }
+    this.editCity[index] = false;
   }
 
   update(): void {
@@ -82,7 +68,6 @@ export class WeatherDisplayComponent implements OnInit, OnDestroy {
 
   constructor(
     private weatherDataService: WeatherDataService,
-    private modalService: BsModalService
   ) {}
 
   ngOnInit(): void {
